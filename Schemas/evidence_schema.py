@@ -7,3 +7,7 @@ class EvidenceItems(BaseModel):
     source: Optional[str] = None
     published_at: Optional[str] = None
     snippet: Optional[str] = None
+
+class EvidencePack(BaseModel):
+    evidence: List[EvidenceItems] = Field(default_factory=list)
+    
