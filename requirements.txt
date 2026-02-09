@@ -5,3 +5,11 @@ pydantic
 langchain-community
 langchain-openai
 ipykernel
+diffusers
+torch
+transformers
+pillow
+diffusers # Fro Running stable diffusion model 
+torch # FRAMEWORK
+transformers # NLP MODELS/ TOKENIZATION
+pillow # SAVE/ MUNIPULATE IMAGE 
