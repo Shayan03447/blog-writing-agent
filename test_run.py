@@ -13,6 +13,7 @@ failed = 0
 
 # --- Schemas ---
 print("\n--- Schemas ---")
+from Schemas.evidence_schema import EvidenceItems, EvidencePack
 from Schemas.image_schema import ImageSpec, GlobalImagePlan
 from Schemas.plan_schema import Plan
 from Schemas.router_schema import RouterDecision
@@ -27,12 +28,13 @@ def run_schema_tests():
         print("  [PASS] evidence_schema")
         passed += 1
     except Exception as e:
+        _debug_log("evidence_schema failed", {"error": str(e)}, "H2")
         print(f"  [FAIL] evidence_schema: {e}")
         failed += 1
     # image
     try:
         spec = ImageSpec(placeholders="[[IMAGE_1]]", filename="test.png", alt="alt", captions="cap", prompt="p")
-        plan = GlobalImagePlan(md_with_placeholder="# Title", images=[spec])
+        plan = GlobalImagePlan(md_with_placeholders="# Title", images=[spec])
         print("  [PASS] image_schema")
         passed += 1
     except Exception as e:

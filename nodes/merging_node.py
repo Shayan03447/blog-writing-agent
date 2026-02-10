@@ -1,16 +1,17 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
-from dotenv import load_dotenv
 from state.State import Blog_State
 from dotenv import load_dotenv
 from Schemas.image_schema import GlobalImagePlan
 load_dotenv()
-llm=ChatOpenAI()
+llm=ChatOpenAI(model="gpt-4.1-mini")
 
 
 
 def merge_content(state: Blog_State):
     plan=state["plan"]
+    if plan is None:
+        raise ValueError("Plan is required")
     ordered_sections=[md for _, md in sorted(
         state["sections"], key=lambda x:x[0]
     )]
@@ -31,7 +32,7 @@ Return strictly GlobalImagePlan
 """
 
 def decide_images(state: Blog_State)->dict:
-    planner=llm.with_structure(GlobalImagePlan)
+    planner=llm.with_structured_output(GlobalImagePlan)
     merged_md=state["merged_md"]
     plan=state["plan"]
     assert plan is not None
@@ -39,14 +40,14 @@ def decide_images(state: Blog_State)->dict:
         SystemMessage(content=DECIDE_IMAGE_SYSTEM),
         HumanMessage(content=(
             f"Blog Kind: {plan.blog_kind}\n"
-            f"Topic : {state["topic"]}\n\n"
+            f"Topic : {state['topic']}\n\n"
             "Insert placeholders + propose image prompts.\n\n"
             f"{merged_md}"
 
         )),
     ])
     return {
-        "md_with_placeholders":image_plan.md_with_placeholders,
-        "image_specs":[img.model_dump() for img in image_plan.images],
+        "md_with_placeholders": image_plan.md_with_placeholders,
+        "image_specs": [img.model_dump() for img in image_plan.images],
     }
 

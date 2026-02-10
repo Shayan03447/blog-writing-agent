@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Literal
 from __future__ import annotations
 
+from pydantic import BaseModel, Field
+from typing import List, Optional, Literal
 
 
 class Task(BaseModel):
@@ -9,13 +9,13 @@ class Task(BaseModel):
     title: str
     goal: str = Field(
         ...,
-        description="One sentence discribing what the reader should do/understand after this section."
+        description="One sentence describing what the reader should do/understand after this section."
     )
     bullets: List[str] = Field(
         ...,
         min_length=3,
         max_length=6,
-        description="3-6 concrete, non-overlaping subpoints to cover in this section."
+        description="3-6 concrete, non-overlapping subpoints to cover in this section."
     )
     target_words: int = Field(
         ...,

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal
 
-class EvidenceItems(BaseModel):
+class EvidenceItem(BaseModel):
     title: str
     url: str
     source: Optional[str] = None
@@ -9,5 +9,5 @@ class EvidenceItems(BaseModel):
     snippet: Optional[str] = None
 
 class EvidencePack(BaseModel):
-    evidence: List[EvidenceItems] = Field(default_factory=list)
+    evidence: List[EvidenceItem] = Field(default_factory=list)
     

@@ -44,18 +44,24 @@ Output must strictly match the Plan schema
 def orchestrator_node(state: Blog_State)->dict:
     planner=llm.with_structured_output(Plan)
     evidence=state.get("evidence",[])
-    mode=state.get("mode", [])
+    mode=state.get("mode", "closed_book")
+
+    forced_kind="news_roundup" if mode=="open_book" else None
     plan=planner.invoke(
         [
             SystemMessage(content=ORCH_SYSTEM),
             HumanMessage(content=(
-                f"Topic: {state["topic"]}\n"
-                f"mode: {state["mode"]}\n"
-                f"Evidence (only use for fresh claims: must be empty):\n"
-                f"{[e.model_dump() for e in evidence][:16]}"
+                f"Topic: {state['topic']}\n"
+                f"mode: {state['mode']}\n"
+                f"As-of: {state['as_of']} (recency days: {state['recency_days']})\n"
+                f"{'Force blog_kind=news_roundup' if forced_kind else ''}\n\n"
+                f"Evidence: \n{[e.model_dump() for e in evidence][:16]}"
+                
             ))
         ]
     )
+    if forced_kind:
+        plan.blog_kind="news_roundup"
     return {"plan":plan}
 
 def fanout(state: Blog_State):
