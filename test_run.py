@@ -13,7 +13,7 @@ failed = 0
 
 # --- Schemas ---
 print("\n--- Schemas ---")
-from Schemas.evidence_schema import EvidenceItems, EvidencePack
+from Schemas.evidence_schema import EvidenceItem, EvidencePack
 from Schemas.image_schema import ImageSpec, GlobalImagePlan
 from Schemas.plan_schema import Plan
 from Schemas.router_schema import RouterDecision
@@ -23,17 +23,16 @@ def run_schema_tests():
     global passed, failed
     # evidence
     try:
-        item = EvidenceItems(title="Test", url="https://example.com")
+        item = EvidenceItem(title="Test", url="https://example.com")
         pack = EvidencePack(evidence=[item])
         print("  [PASS] evidence_schema")
         passed += 1
     except Exception as e:
-        _debug_log("evidence_schema failed", {"error": str(e)}, "H2")
         print(f"  [FAIL] evidence_schema: {e}")
         failed += 1
     # image
     try:
-        spec = ImageSpec(placeholders="[[IMAGE_1]]", filename="test.png", alt="alt", captions="cap", prompt="p")
+        spec = ImageSpec(placeholders="[[IMAGE_1]]", filename="test.png", alt="alt", caption="cap", prompt="p")
         plan = GlobalImagePlan(md_with_placeholders="# Title", images=[spec])
         print("  [PASS] image_schema")
         passed += 1
@@ -51,7 +50,7 @@ def run_schema_tests():
         failed += 1
     # router
     try:
-        d = RouterDecision(needs_research=False, mode="closed_book")
+        d = RouterDecision(needs_research=False, mode="closed_book", reason="Test")
         print("  [PASS] router_schema")
         passed += 1
     except Exception as e:
@@ -112,16 +111,16 @@ def run_node_import_tests():
         import importlib.util
         spec = importlib.util.spec_from_file_location(
             "router_node",
-            os.path.join(os.path.dirname(__file__), "nodes", "Router_ Node.py")
+            os.path.join(os.path.dirname(__file__), "nodes", "Router_Node.py")
         )
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         assert hasattr(mod, "Router_Node")
         assert hasattr(mod, "route_next")
-        print("  [PASS] Router_ Node")
+        print("  [PASS] Router_Node")
         passed += 1
     except Exception as e:
-        print(f"  [FAIL] Router_ Node: {e}")
+        print(f"  [FAIL] Router_Node: {e}")
         failed += 1
 
 # --- Node logic (no API) ---
@@ -159,7 +158,7 @@ def run_full_test():
         import importlib.util
         spec = importlib.util.spec_from_file_location(
             "router_node",
-            os.path.join(os.path.dirname(__file__), "nodes", "Router_ Node.py")
+            os.path.join(os.path.dirname(__file__), "nodes", "Router_Node.py")
         )
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

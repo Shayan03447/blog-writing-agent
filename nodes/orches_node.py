@@ -18,7 +18,7 @@ Hard Requirements:
   3) target words counts (120-550)
 
 Quality bar
-- Assume the reader is a deveoper: use correct terminology.
+- Assume the reader is a developer: use correct terminology.
 - Bullets must be actionable : build/compare/measure/verify/debug.
 - Ensure the overall plan include at least 2 of these somewhere.
   * minimal code sketch / MWE (set requires_code=True for that section)
@@ -52,8 +52,8 @@ def orchestrator_node(state: Blog_State)->dict:
             SystemMessage(content=ORCH_SYSTEM),
             HumanMessage(content=(
                 f"Topic: {state['topic']}\n"
-                f"mode: {state['mode']}\n"
-                f"As-of: {state['as_of']} (recency days: {state['recency_days']})\n"
+                f"mode: {state.get('mode', 'closed_book')}\n"
+                f"As-of: {state.get('as_of', '')} (recency days: {state.get('recency_days', 3650)})\n"
                 f"{'Force blog_kind=news_roundup' if forced_kind else ''}\n\n"
                 f"Evidence: \n{[e.model_dump() for e in evidence][:16]}"
                 
@@ -74,9 +74,11 @@ def fanout(state: Blog_State):
                     "task":task.model_dump(),
                     "topic":state["topic"],
                     "mode":state["mode"],
+                    "as_of":state["as_of"],
+                    "recency_days":state["recency_days"],
                     "plan":state["plan"].model_dump(),
-                    "evidence":[e.model_dump() for e in state.get("evidence",[])]
-                }
+                    "evidence":[e.model_dump() for e in state.get("evidence",[])],
+                },
 
             )
         )

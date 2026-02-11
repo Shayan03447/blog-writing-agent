@@ -1,10 +1,11 @@
 import os
+from datetime import date, timedelta
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 from langchain_community.tools.tavily_search import TavilySearchResults
 from state.State import Blog_State
 from langchain_openai import ChatOpenAI
-from typing import List
+from typing import List, Optional
 from Schemas.evidence_schema import EvidencePack
 load_dotenv()
 llm=ChatOpenAI(model="gpt-4.1-mini")
@@ -29,8 +30,9 @@ def _tavily_search(query: str, max_results: int = 5) -> List[dict]:
         return normalized
     except Exception as e:
         print(f"Error searching Tavily: {e}")
+        return []
 
-def _iso_to_date(s: Optional[str])-> Optional[data]:
+def _iso_to_date(s: Optional[str]) -> Optional[date]:
     if not s:
         return None
     try:
@@ -45,7 +47,7 @@ Given raw web search results, produce a deduplicated list of EvidenceItem object
 Rules:
 - Only include items with a non-empty url.
 - Prefer relevent + authoritative sources (company blogs, docs, reputable outlets).
-- If a published date is explicitly present in the result payload, keep it as YYY--MM-DD.
+- If a published date is explicitly present in the result payload, keep it as YYYY-MM-DD.
   If missing or unclear, set published_at=null. Do not guess
 - Keep snippets short
 - Deduplicate by url 

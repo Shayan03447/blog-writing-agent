@@ -11,11 +11,11 @@ ROUTER_SYSTEM="""You are a routing module for a technical blog planner.
 Decide whether web research is needed before planning
 Modes:
 - closed_book (needs_research=false):
-Evergreen topics where correctness does not depend on the recent facts (concept, fundamentals).
+Evergreen topics where correctness does not depend on the recent facts (concepts, fundamentals).
 - hybrid (needs_research=true):
 Mostly evergreen but needs up-to-date examples/tools/models to be usefull.
-- Open_book (needs_research=true):
-Mostlt volatile: Weekly roundups, "this_week", "latest", ranking, pricing, policy/regulation.
+- open_book (needs_research=true):
+Mostly volatile: Weekly roundups, "this_week", "latest", ranking, pricing, policy/regulation.
 
 if needs_research=true:
 - Output 3-10 high signal queries.
@@ -28,13 +28,20 @@ def Router_Node(state: Blog_State)-> dict:
     decision=decider.invoke(
         [
             SystemMessage(content=ROUTER_SYSTEM),
-            HumanMessage(content=f"Topic: {topic}")
+            HumanMessage(content=f"Topic: {state['topic']}\nAs-of date: {state['as_of']}"),
         ]
     )
+    if decision.mode == "open_book":
+        recency_days=7
+    elif decision.mode == "hybrid":
+        recency_days=45
+    else:
+        recency_days=3650
     return {
         "needs_research":decision.needs_research,
         "mode": decision.mode,
         "queries":decision.queries,
+        "recency_days":recency_days,
 
     }
 def route_next(state: Blog_State) -> str:

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from state.State import Blog_State
 from Schemas.task_schema import Task
 from Schemas.plan_schema import Plan
-from Schemas.evidence_schema import EvidenceItems
+from Schemas.evidence_schema import EvidenceItem
 load_dotenv()
 llm=ChatOpenAI(model="gpt-4.1-mini")
 
@@ -42,7 +42,7 @@ Style:
 def worker_node(payload: dict)-> dict:
     task= Task(**payload["task"])
     plan=Plan(**payload["plan"])
-    evidence=[EvidenceItems(**e) for e in payload.get("evidence",[])]
+    evidence=[EvidenceItem(**e) for e in payload.get("evidence",[])]
     topic=payload["topic"]
     mode=payload.get("mode","closed_book")
 
@@ -62,8 +62,9 @@ def worker_node(payload: dict)-> dict:
                 f"Tone: {plan.tone}\n"
                 f"Blog kind : {plan.blog_kind}\n"
                 f"Constraints: {plan.constraints}\n"
-                f"Topic: {topic}\n"
-                f"Mode: {mode}\n\n"
+                f"Topic: {payload['topic']}\n"
+                f"Mode: {payload.get('mode')}\n"
+                f"As-of: {payload.get('as_of')} (recency days={payload.get('recency_days')})\n\n"
                 f"Section title: {task.title}\n"
                 f"Goal: {task.goal}\n"
                 f"Target words: {task.target_words}\n"
@@ -76,7 +77,7 @@ def worker_node(payload: dict)-> dict:
 
                 
             )
-        )
+        ),
     ]).content.strip()
 
     return {"sections":[(task.id, section_md)]}
