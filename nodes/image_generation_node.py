@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 from threading import Thread
 import queue
+import threading
 
 
 
@@ -30,6 +31,7 @@ def _get_pipeline():
                 torch_dtype=torch.float32
             )
             _pipeline=_pipeline.to("cpu")
+            # Memory optimizations for CPU
             try:
                 _pipeline.enable_attention_slicing()
                 _pipeline.enable_sequential_cpu_offload()
@@ -37,6 +39,7 @@ def _get_pipeline():
                 pass
             print("[INFO] Model loaded successfully!")
     return _pipeline
+
 
 # _pipeline=None
 # def _get_pipeline():

@@ -9,7 +9,8 @@ diffusers
 torch
 transformers
 pillow
+streamlit
 diffusers # Fro Running stable diffusion model 
 torch # FRAMEWORK
 transformers # NLP MODELS/ TOKENIZATION
-pillow # SAVE/ MUNIPULATE IMAGE 
+pillow # SAVE/ MUNIPULATE IMAGE
